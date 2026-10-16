@@ -42,10 +42,15 @@ export default function LuckyDrawAdmin() {
     name: '',
     phone: '',
     email: '',
+    ticketNumber: '',
     area: 'Rajarampuri',
     customArea: ''
   });
   const [isSubmittingManual, setIsSubmittingManual] = useState(false);
+
+  // Pagination for 400-500 entries
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
 
   // Big screen & Lucky Draw states
   const [isBigScreenActive, setIsBigScreenActive] = useState(false);
@@ -101,6 +106,7 @@ export default function LuckyDrawAdmin() {
 
   // Filter search
   useEffect(() => {
+    setCurrentPage(1);
     if (!searchTerm.trim()) {
       setFilteredParticipants(participants);
     } else {
@@ -115,6 +121,12 @@ export default function LuckyDrawAdmin() {
       );
     }
   }, [searchTerm, participants]);
+
+  const totalEntries = filteredParticipants.length;
+  const totalPages = pageSize === 'all' ? 1 : Math.max(1, Math.ceil(totalEntries / pageSize));
+  const paginatedParticipants = pageSize === 'all'
+    ? filteredParticipants
+    : filteredParticipants.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   // Fullscreen toggle
   const toggleFullscreen = () => {
@@ -201,8 +213,8 @@ export default function LuckyDrawAdmin() {
   // Add Manual Participant Entry
   const handleManualSubmit = async (e) => {
     e.preventDefault();
-    if (!manualData.name.trim() || !manualData.phone.trim()) {
-      toast.error('Please enter name and phone number');
+    if (!manualData.name.trim() || !manualData.phone.trim() || !manualData.email.trim()) {
+      toast.error('Please enter name, phone number, and email address');
       return;
     }
 
@@ -217,25 +229,26 @@ export default function LuckyDrawAdmin() {
         name: manualData.name.trim(),
         phone: manualData.phone.trim(),
         email: manualData.email.trim(),
+        ticketNumber: manualData.ticketNumber ? manualData.ticketNumber.trim() : null,
         area: finalArea,
         selectedDropdownArea: manualData.area,
         isOtherArea: isOther
-      });
+      }, { throwIfExists: true });
 
-      setParticipants(prev => [newEntry, ...prev]);
-      setFilteredParticipants(prev => [newEntry, ...prev]);
+      await loadParticipants();
       toast.success(`Entry created! Ticket #${newEntry.ticketNumber}`);
       setIsManualModalOpen(false);
       setManualData({
         name: '',
         phone: '',
         email: '',
+        ticketNumber: '',
         area: 'Rajarampuri',
         customArea: ''
       });
     } catch (err) {
       console.error(err);
-      toast.error('Failed to create manual entry');
+      toast.error(err.message || 'Failed to create manual entry');
     } finally {
       setIsSubmittingManual(false);
     }
@@ -567,7 +580,7 @@ export default function LuckyDrawAdmin() {
                   </td>
                 </tr>
               ) : (
-                filteredParticipants.map((entry) => (
+                paginatedParticipants.map((entry) => (
                   <tr key={entry.ticketNumber || entry.phone} className="hover:bg-white/5 transition-colors">
                     <td className="px-5 py-3.5 font-mono text-sm font-bold text-primary tracking-wider">
                       {entry.ticketNumber || '0000'}
@@ -608,6 +621,67 @@ export default function LuckyDrawAdmin() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Bar for 400 to 500 entries */}
+        {totalEntries > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 text-xs text-gray-400 border-t border-white/5">
+            <div className="flex items-center gap-2">
+              <span>
+                Showing{' '}
+                <strong className="text-white">
+                  {pageSize === 'all' ? 1 : (currentPage - 1) * pageSize + 1}
+                </strong>
+                -
+                <strong className="text-white">
+                  {pageSize === 'all' ? totalEntries : Math.min(currentPage * pageSize, totalEntries)}
+                </strong>{' '}
+                of <strong className="text-white">{totalEntries}</strong> entries
+              </span>
+
+              <span className="text-white/20">|</span>
+
+              <div className="flex items-center gap-1.5">
+                <span>Rows:</span>
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    const val = e.target.value === 'all' ? 'all' : parseInt(e.target.value, 10);
+                    setPageSize(val);
+                    setCurrentPage(1);
+                  }}
+                  className="bg-[#050505] border border-white/10 rounded-lg px-2 py-1 text-white text-xs cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                  <option value="all">All</option>
+                </select>
+              </div>
+            </div>
+
+            {pageSize !== 'all' && totalPages > 1 && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  Previous
+                </button>
+                <span className="px-2 font-mono text-white">
+                  {currentPage} / {totalPages}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* ========================================================================= */}
@@ -663,22 +737,43 @@ export default function LuckyDrawAdmin() {
                   <input
                     type="tel"
                     required
-                    placeholder="e.g. 9822012345"
+                    maxLength={10}
+                    placeholder="e.g. 9822012345 (10 digits)"
                     value={manualData.phone}
                     onChange={(e) => setManualData({ ...manualData, phone: e.target.value })}
-                    className="w-full bg-[#111111] border border-white/10 rounded-xl py-2.5 px-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full bg-[#111111] border border-white/10 rounded-xl py-2.5 px-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary font-mono placeholder:font-sans"
+                  />
+                  <p className="text-[11px] text-gray-400 mt-1">Strictly one ticket per phone number.</p>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-gray-300">
+                      Ticket Number <span className="text-gray-500 font-normal">(Optional)</span>
+                    </label>
+                    <span className="text-[10px] text-primary font-medium">Leave blank for auto-assign</span>
+                  </div>
+                  <input
+                    type="text"
+                    maxLength={5}
+                    placeholder="e.g. 0045 (or leave empty for sequence)"
+                    value={manualData.ticketNumber}
+                    onChange={(e) => setManualData({ ...manualData, ticketNumber: e.target.value })}
+                    className="w-full bg-[#111111] border border-white/10 rounded-xl py-2.5 px-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary font-mono placeholder:font-sans"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">Email (Optional)</label>
+                  <label className="block text-xs font-semibold text-gray-300 mb-1">Email Address *</label>
                   <input
                     type="email"
+                    required
                     placeholder="e.g. rahul@gmail.com"
                     value={manualData.email}
                     onChange={(e) => setManualData({ ...manualData, email: e.target.value })}
                     className="w-full bg-[#111111] border border-white/10 rounded-xl py-2.5 px-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   />
+                  <p className="text-[11px] text-gray-400 mt-1">Both mobile and email must be unique per participant.</p>
                 </div>
 
                 <div>
