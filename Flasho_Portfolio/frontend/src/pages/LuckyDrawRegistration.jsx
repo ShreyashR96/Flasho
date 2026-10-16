@@ -37,7 +37,7 @@ export default function LuckyDrawRegistration() {
     canonical: '/lucky-draw'
   });
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm({
+  const { register, handleSubmit, watch, reset, formState: { errors } } = useForm({
     defaultValues: {
       area: KOLHAPUR_AREAS[0]
     }
@@ -71,11 +71,20 @@ export default function LuckyDrawRegistration() {
       });
 
       setTicketData(entry);
-      triggerConfetti();
-      toast.success('🎉 Entry confirmed! Your ticket number has been generated.');
+
+      if (entry.isExisting) {
+        const fieldName = entry.matchedBy === 'email' ? 'email address' : 'mobile number';
+        toast(`Welcome back, ${entry.name}! You are already registered with this ${fieldName}. Here is your ticket.`, {
+          icon: '🎟️',
+          duration: 4500
+        });
+      } else {
+        triggerConfetti();
+        toast.success(`🎉 Entry confirmed! Ticket #${entry.ticketNumber} is reserved in your name.`);
+      }
     } catch (err) {
       console.error(err);
-      toast.error('Could not submit your entry. Please try again.');
+      toast.error(err.message || 'Could not submit your entry. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -231,7 +240,10 @@ export default function LuckyDrawRegistration() {
                   className="w-full mt-3 py-3.5 px-6 rounded-xl bg-primary hover:bg-accent text-white font-display font-bold text-base shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   {isSubmitting ? (
-                    <span>Submitting Entry...</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Reserving Ticket...</span>
+                    </div>
                   ) : (
                     <>
                       <span>Get My Lucky Ticket</span>
@@ -265,15 +277,23 @@ export default function LuckyDrawRegistration() {
                   <Ticket size={28} />
                 </div>
 
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-primary text-xs font-bold uppercase tracking-wider mb-2">
-                  <CheckCircle size={14} /> Entry Registered!
-                </div>
+                {ticketData.isExisting ? (
+                  <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider mb-2 border border-blue-200 shadow-sm">
+                    <CheckCircle size={14} /> Already Registered!
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-50 text-primary text-xs font-bold uppercase tracking-wider mb-2 border border-emerald-100 shadow-sm">
+                    <CheckCircle size={14} /> Entry Registered!
+                  </div>
+                )}
 
                 <h2 className="text-2xl sm:text-3xl font-display font-bold text-secondary">
-                  Your Lucky Ticket
+                  {ticketData.isExisting ? 'Your Official Ticket' : 'Your Lucky Ticket'}
                 </h2>
                 <p className="text-gray-500 text-sm mt-1">
-                  Please save or remember your ticket number. It will be called on the big screen!
+                  {ticketData.isExisting
+                    ? `This ${ticketData.matchedBy === 'email' ? 'email address' : 'mobile number'} is already registered in the Lucky Draw. Here is your official ticket!`
+                    : 'Please save or remember your ticket number. It will be called on the big screen!'}
                 </p>
 
                 {/* Ticket Number Highlight Box */}
@@ -300,7 +320,16 @@ export default function LuckyDrawRegistration() {
                   </Link>
 
                   <button
-                    onClick={() => setTicketData(null)}
+                    onClick={() => {
+                      setTicketData(null);
+                      reset({
+                        name: '',
+                        phone: '',
+                        email: '',
+                        area: KOLHAPUR_AREAS[0]
+                      });
+                      setCustomArea('');
+                    }}
                     className="w-full py-2.5 px-4 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-600 text-xs text-center transition-all cursor-pointer font-medium"
                   >
                     + Register Another Person
