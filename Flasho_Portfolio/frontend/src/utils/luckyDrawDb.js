@@ -216,29 +216,24 @@ export const luckyDrawDb = {
         };
       }
 
-      // 2. Scan all existing participants to establish the current maximum ticket number
-      const currentParticipants = await luckyDrawDb.getAllParticipants();
-      let maxSystemTicket = 0;
-      for (const p of currentParticipants) {
+      // 2. Fast check of current sequence counter (instant memory lookup)
+      let localMaxSeq = 0;
+      try {
+        localMaxSeq = parseInt(localStorage.getItem(SEQ_STORAGE_KEY) || '0', 10) || 0;
+      } catch {}
+
+      const localList = luckyDrawDb.getLocalParticipants();
+      for (const p of localList) {
         const num = parseInt(p.ticketNumber, 10);
-        if (!isNaN(num) && num > maxSystemTicket && num < 100000) {
-          maxSystemTicket = num;
+        if (!isNaN(num) && num > localMaxSeq && num < 100000) {
+          localMaxSeq = num;
         }
       }
 
-      // 3. If manual ticket was specified (e.g. from admin)
+      // 3. If manual ticket was specified
       let assignedTicket = null;
       if (data.ticketNumber) {
-        const formatted = formatTicketNumber(data.ticketNumber);
-        const duplicateTicket = currentParticipants.find(p => 
-          p.ticketNumber === formatted && 
-          normalizePhone(p.phone) !== cleanPhone &&
-          normalizeEmail(p.email) !== cleanEmail
-        );
-        if (duplicateTicket) {
-          throw new Error(`Ticket #${formatted} is already assigned to ${duplicateTicket.name}. Please enter a different ticket number or leave blank to auto-generate.`);
-        }
-        assignedTicket = formatted;
+        assignedTicket = formatTicketNumber(data.ticketNumber);
       }
 
       let finalEntry = null;
@@ -281,7 +276,7 @@ export const luckyDrawDb = {
               let ticketToUse = assignedTicket;
               if (!ticketToUse) {
                 const counterSnap = await transaction.get(counterRef);
-                let lastSeq = maxSystemTicket;
+                let lastSeq = localMaxSeq;
                 if (counterSnap.exists()) {
                   const dbSeq = counterSnap.data().lastTicketNumber || 0;
                   if (dbSeq > lastSeq) lastSeq = dbSeq;
@@ -296,7 +291,7 @@ export const luckyDrawDb = {
               } else {
                 const manualNum = parseInt(ticketToUse, 10);
                 const counterSnap = await transaction.get(counterRef);
-                const currentLast = counterSnap.exists() ? (counterSnap.data().lastTicketNumber || 0) : maxSystemTicket;
+                const currentLast = counterSnap.exists() ? (counterSnap.data().lastTicketNumber || 0) : localMaxSeq;
                 if (manualNum > currentLast) {
                   transaction.set(counterRef, {
                     lastTicketNumber: manualNum,
@@ -351,7 +346,7 @@ export const luckyDrawDb = {
       if (!finalEntry) {
         let ticketToUse = assignedTicket;
         if (!ticketToUse) {
-          ticketToUse = formatTicketNumber(maxSystemTicket + 1);
+          ticketToUse = formatTicketNumber(localMaxSeq + 1);
         }
 
         finalEntry = {

@@ -4,7 +4,7 @@ import {
   Trophy, Gift, QrCode, Play, RotateCcw, Download, Trash2, 
   Search, Users, Sparkles, Maximize2, Minimize2, ExternalLink,
   Phone, MapPin, Ticket, Volume2, VolumeX, ShieldCheck, CheckCircle,
-  UserPlus, X
+  X
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import confetti from 'canvas-confetti';
@@ -12,41 +12,12 @@ import toast from 'react-hot-toast';
 import { luckyDrawDb } from '../../utils/luckyDrawDb';
 import { soundFX } from '../../utils/audioEffects';
 
-const KOLHAPUR_AREAS = [
-  'Rajarampuri',
-  'Tarabai Park',
-  'Shahupuri',
-  'Rankala / Sambhajinagar',
-  'Nagala Park',
-  'Kadamwadi',
-  'Kalamba',
-  'Gandhinagar',
-  'Laxmipuri',
-  'Bhavani Mandap',
-  'Ruikar Colony',
-  'Uchgaon',
-  'Kasaba Bawada',
-  'Pratibha Nagar',
-  'Other Kolhapur Area'
-];
-
 export default function LuckyDrawAdmin() {
   const [participants, setParticipants] = useState([]);
   const [filteredParticipants, setFilteredParticipants] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Manual Entry Modal
-  const [isManualModalOpen, setIsManualModalOpen] = useState(false);
-  const [manualData, setManualData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    ticketNumber: '',
-    area: 'Rajarampuri',
-    customArea: ''
-  });
-  const [isSubmittingManual, setIsSubmittingManual] = useState(false);
 
   // Pagination for 400-500 entries
   const [currentPage, setCurrentPage] = useState(1);
@@ -210,49 +181,6 @@ export default function LuckyDrawAdmin() {
     }
   };
 
-  // Add Manual Participant Entry
-  const handleManualSubmit = async (e) => {
-    e.preventDefault();
-    if (!manualData.name.trim() || !manualData.phone.trim() || !manualData.email.trim()) {
-      toast.error('Please enter name, phone number, and email address');
-      return;
-    }
-
-    setIsSubmittingManual(true);
-    try {
-      const isOther = manualData.area === 'Other Kolhapur Area';
-      const finalArea = isOther && manualData.customArea.trim()
-        ? `${manualData.customArea.trim()}, Kolhapur`
-        : `${manualData.area}, Kolhapur`;
-
-      const newEntry = await luckyDrawDb.saveParticipant({
-        name: manualData.name.trim(),
-        phone: manualData.phone.trim(),
-        email: manualData.email.trim(),
-        ticketNumber: manualData.ticketNumber ? manualData.ticketNumber.trim() : null,
-        area: finalArea,
-        selectedDropdownArea: manualData.area,
-        isOtherArea: isOther
-      }, { throwIfExists: true });
-
-      await loadParticipants();
-      toast.success(`Entry created! Ticket #${newEntry.ticketNumber}`);
-      setIsManualModalOpen(false);
-      setManualData({
-        name: '',
-        phone: '',
-        email: '',
-        ticketNumber: '',
-        area: 'Rajarampuri',
-        customArea: ''
-      });
-    } catch (err) {
-      console.error(err);
-      toast.error(err.message || 'Failed to create manual entry');
-    } finally {
-      setIsSubmittingManual(false);
-    }
-  };
 
   // Export CSV (Reliable Blob export with UTF-8 BOM so all participants' names are downloaded)
   const handleExportCSV = async () => {
@@ -519,13 +447,6 @@ export default function LuckyDrawAdmin() {
 
           {/* Action buttons */}
           <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-            {/* Manual Entry Button */}
-            <button
-              onClick={() => setIsManualModalOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-primary hover:bg-accent text-white font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
-            >
-              <UserPlus size={14} /> Add Manual Entry
-            </button>
 
             <button
               onClick={handleResetDraw}
@@ -684,148 +605,6 @@ export default function LuckyDrawAdmin() {
         )}
       </div>
 
-      {/* ========================================================================= */}
-      {/* 📝 MANUAL ENTRY MODAL                                                     */}
-      {/* ========================================================================= */}
-      <AnimatePresence>
-        {isManualModalOpen && (
-          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsManualModalOpen(false)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"
-            />
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="relative z-10 w-full max-w-md bg-[#181818] border border-white/10 rounded-3xl p-6 shadow-2xl text-white"
-            >
-              <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
-                    <UserPlus size={18} />
-                  </div>
-                  <h3 className="font-display font-bold text-lg text-white">Add Participant Entry</h3>
-                </div>
-                <button
-                  onClick={() => setIsManualModalOpen(false)}
-                  className="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-
-              <form onSubmit={handleManualSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">Full Name *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Rahul Patil"
-                    value={manualData.name}
-                    onChange={(e) => setManualData({ ...manualData, name: e.target.value })}
-                    className="w-full bg-[#111111] border border-white/10 rounded-xl py-2.5 px-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">WhatsApp / Phone *</label>
-                  <input
-                    type="tel"
-                    required
-                    maxLength={10}
-                    placeholder="e.g. 9822012345 (10 digits)"
-                    value={manualData.phone}
-                    onChange={(e) => setManualData({ ...manualData, phone: e.target.value })}
-                    className="w-full bg-[#111111] border border-white/10 rounded-xl py-2.5 px-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary font-mono placeholder:font-sans"
-                  />
-                  <p className="text-[11px] text-gray-400 mt-1">Strictly one ticket per phone number.</p>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-semibold text-gray-300">
-                      Ticket Number <span className="text-gray-500 font-normal">(Optional)</span>
-                    </label>
-                    <span className="text-[10px] text-primary font-medium">Leave blank for auto-assign</span>
-                  </div>
-                  <input
-                    type="text"
-                    maxLength={5}
-                    placeholder="e.g. 0045 (or leave empty for sequence)"
-                    value={manualData.ticketNumber}
-                    onChange={(e) => setManualData({ ...manualData, ticketNumber: e.target.value })}
-                    className="w-full bg-[#111111] border border-white/10 rounded-xl py-2.5 px-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary font-mono placeholder:font-sans"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">Email Address *</label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="e.g. rahul@gmail.com"
-                    value={manualData.email}
-                    onChange={(e) => setManualData({ ...manualData, email: e.target.value })}
-                    className="w-full bg-[#111111] border border-white/10 rounded-xl py-2.5 px-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                  <p className="text-[11px] text-gray-400 mt-1">Both mobile and email must be unique per participant.</p>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">Location Area *</label>
-                  <select
-                    value={manualData.area}
-                    onChange={(e) => setManualData({ ...manualData, area: e.target.value })}
-                    className="w-full bg-[#111111] border border-white/10 rounded-xl py-2.5 px-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
-                  >
-                    {KOLHAPUR_AREAS.map(area => (
-                      <option key={area} value={area} className="bg-secondary text-white">
-                        {area}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {manualData.area === 'Other Kolhapur Area' && (
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-300 mb-1">Specify Area Name *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Shiroli, Kolhapur"
-                      value={manualData.customArea}
-                      onChange={(e) => setManualData({ ...manualData, customArea: e.target.value })}
-                      className="w-full bg-[#111111] border border-white/10 rounded-xl py-2.5 px-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
-                  </div>
-                )}
-
-                <div className="pt-2 flex items-center justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsManualModalOpen(false)}
-                    className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-sm font-semibold transition-colors cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmittingManual}
-                    className="px-5 py-2.5 rounded-xl bg-primary hover:bg-accent text-white text-sm font-display font-bold transition-all shadow-md cursor-pointer disabled:opacity-50"
-                  >
-                    {isSubmittingManual ? 'Saving...' : 'Add Participant'}
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       {/* ========================================================================= */}
       {/* 🗑️ DELETE CONFIRMATION MODAL (MOBILE & DESKTOP RELIABLE)                  */}
@@ -881,7 +660,7 @@ export default function LuckyDrawAdmin() {
       {isBigScreenActive && (
         <div 
           ref={bigScreenRef}
-          className="fixed inset-0 z-50 bg-white text-secondary flex flex-col justify-between overflow-hidden select-none"
+          className="fixed inset-0 z-50 bg-white text-secondary flex flex-col overflow-hidden select-none"
           style={{ backgroundColor: '#ffffff' }}
         >
           {/* Confetti Canvas strictly attached to the Big Screen Stage Modal */}
@@ -891,13 +670,13 @@ export default function LuckyDrawAdmin() {
           />
 
           {/* Top Bar for Big Screen Controls */}
-          <div className="w-full px-6 py-4 flex items-center justify-between border-b border-gray-100 bg-white shadow-sm z-30">
+          <div className="w-full px-4 py-2.5 sm:px-6 sm:py-3 flex items-center justify-between border-b border-gray-100 bg-white shadow-sm z-30 flex-shrink-0">
             {/* Flasho Logo from Public Folder */}
             <div className="flex items-center gap-3">
               <img 
                 src="/flasho-logo.png" 
                 alt="Flasho" 
-                className="h-10 md:h-12 object-contain" 
+                className="h-9 sm:h-10 md:h-11 object-contain" 
               />
               <span className="hidden sm:inline-block text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-50 text-primary border border-emerald-100">
                 Mega Lucky Draw Stage
@@ -905,12 +684,12 @@ export default function LuckyDrawAdmin() {
             </div>
 
             {/* Stage Controls */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               {/* View Switchers */}
               <div className="bg-gray-100 p-1 rounded-xl flex items-center text-xs font-bold">
                 <button
                   onClick={() => setBigScreenMode('draw')}
-                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                     bigScreenMode === 'draw' ? 'bg-white shadow text-primary font-bold' : 'text-gray-600 hover:text-black'
                   }`}
                 >
@@ -918,7 +697,7 @@ export default function LuckyDrawAdmin() {
                 </button>
                 <button
                   onClick={() => setBigScreenMode('qr')}
-                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                     bigScreenMode === 'qr' ? 'bg-white shadow text-primary font-bold' : 'text-gray-600 hover:text-black'
                   }`}
                 >
@@ -947,7 +726,7 @@ export default function LuckyDrawAdmin() {
               {/* Exit Stage (Automatically Resets the Draw) */}
               <button
                 onClick={handleExitStage}
-                className="px-4 py-2 rounded-xl bg-secondary hover:bg-black text-white text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95"
+                className="px-3 sm:px-4 py-2 rounded-xl bg-secondary hover:bg-black text-white text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95"
               >
                 Exit Stage
               </button>
@@ -955,46 +734,41 @@ export default function LuckyDrawAdmin() {
           </div>
 
           {/* ========================================================== */}
-          {/* STAGE VIEW A: Big Screen QR Code (Large Size + Logo)        */}
+          {/* STAGE VIEW A: Big Screen QR Code (Elevated & Responsive)   */}
           {/* ========================================================== */}
           {bigScreenMode === 'qr' && (
-            <div className="flex-grow flex flex-col items-center justify-center p-6 sm:p-12 bg-white text-center relative">
-              <div className="max-w-3xl w-full flex flex-col items-center">
-                <img 
-                  src="/flasho-logo.png" 
-                  alt="Flasho" 
-                  className="h-16 sm:h-20 md:h-24 object-contain mb-4" 
-                />
-
-                <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-extrabold text-secondary tracking-tight">
-                  SCAN WITH PHONE <br />
-                  <span className="text-primary">TO ENTER & WIN!</span> 🎁
+            <div className="flex-1 flex flex-col items-center justify-start sm:justify-center pt-3 sm:pt-4 px-4 pb-4 bg-white text-center relative overflow-y-auto">
+              <div className="max-w-xl w-full flex flex-col items-center">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-display font-extrabold text-secondary tracking-tight leading-snug">
+                  SCAN WITH PHONE <span className="text-primary">TO ENTER & WIN!</span> 🎁
                 </h2>
-                <p className="text-lg text-gray-600 font-medium mt-2 mb-8">
-                  Point your mobile camera at the QR code below. Enter details to get your lucky ticket!
+                <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1 mb-2.5 max-w-md mx-auto">
+                  Point your mobile camera at the QR code below to get your lucky ticket!
                 </p>
 
-                {/* Extra Large Big QR Box */}
-                <div className="p-6 sm:p-8 bg-white rounded-3xl shadow-2xl border-4 border-gray-100 flex flex-col items-center">
+                {/* Elevated Centered QR Box */}
+                <div className="p-3 sm:p-4 bg-white rounded-2xl shadow-lg border border-gray-100 flex flex-col items-center">
                   <QRCodeSVG 
                     value={registrationUrl} 
-                    size={380} 
+                    size={210} 
                     level="H" 
-                    includeMargin={true}
+                    includeMargin={false}
+                    className="w-40 h-40 sm:w-48 sm:h-48 md:w-52 md:h-52 max-h-[35vh] max-w-[35vh] object-contain"
                   />
                   
-                  <div className="mt-4 py-2 px-5 rounded-full bg-emerald-50 text-primary text-sm font-mono font-bold border border-emerald-100">
-                    ⚡ {registrationUrl}
+                  <div className="mt-2 py-1 px-3 rounded-full bg-emerald-50 text-primary text-[11px] sm:text-xs font-mono font-bold border border-emerald-100 flex items-center gap-1.5">
+                    <span>⚡</span>
+                    <span className="truncate max-w-[240px] sm:max-w-xs">{registrationUrl}</span>
                   </div>
                 </div>
 
-                <div className="mt-8 flex items-center justify-center gap-6 text-sm font-bold text-gray-500">
-                  <span className="flex items-center gap-1.5">
-                    <ShieldCheck size={18} className="text-primary" /> Free Entry
+                <div className="mt-2.5 flex items-center justify-center gap-3 sm:gap-4 text-[11px] sm:text-xs font-bold text-gray-500">
+                  <span className="flex items-center gap-1">
+                    <ShieldCheck size={14} className="text-primary" /> Free Entry
                   </span>
                   <span>•</span>
-                  <span className="flex items-center gap-1.5">
-                    <Trophy size={18} className="text-amber-500" /> 3 Lucky Winners
+                  <span className="flex items-center gap-1">
+                    <Trophy size={14} className="text-amber-500" /> 3 Lucky Winners
                   </span>
                   <span>•</span>
                   <span>📍 Kolhapur Special</span>
@@ -1002,10 +776,10 @@ export default function LuckyDrawAdmin() {
 
                 <button
                   onClick={() => setBigScreenMode('draw')}
-                  className="mt-8 px-8 py-3.5 rounded-2xl bg-primary hover:bg-accent text-white font-display font-bold text-base shadow-lg transition-all cursor-pointer flex items-center gap-2 active:scale-95"
+                  className="mt-3 px-5 py-2 rounded-xl bg-primary hover:bg-accent text-white font-display font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer flex items-center gap-2 active:scale-95"
                 >
-                  <span>Ready to Draw? Go to Lucky Draw Stage</span>
-                  <Play size={18} />
+                  <span>Go to Lucky Draw Stage</span>
+                  <Play size={15} />
                 </button>
               </div>
             </div>
