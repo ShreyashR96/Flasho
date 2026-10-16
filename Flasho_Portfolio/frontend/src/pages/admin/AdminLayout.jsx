@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Briefcase, LogOut, Menu, X, Users, Share2, Star, HelpCircle, MapPin } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Briefcase, LogOut, Menu, X, Users, Share2, Star, HelpCircle, MapPin, Gift } from 'lucide-react';
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -8,6 +8,7 @@ export default function AdminLayout() {
 
   const navItems = [
     { name: 'Dashboard', path: '/flasho', icon: LayoutDashboard },
+    { name: 'Lucky Draw 🎁', path: '/flasho/lucky-draw', icon: Gift },
     { name: 'Messages', path: '/flasho/messages', icon: MessageSquare },
     { name: 'Services', path: '/flasho/services', icon: Briefcase },
     { name: 'Team', path: '/flasho/team', icon: Users },
@@ -24,8 +25,8 @@ export default function AdminLayout() {
       {/* Mobile Header */}
       <div className="md:hidden bg-secondary text-white p-4 flex justify-between items-center z-20 shadow-md">
         <Link to="/" className="flex items-center gap-2">
-          <div className="bg-primary text-secondary w-8 h-8 rounded-lg flex items-center justify-center p-1 shadow-lg">
-            <img src="/Flasho-Symbol.png" alt="Flasho" className="w-full h-full object-contain" />
+          <div className="bg-primary text-secondary w-8 h-8 rounded-lg flex items-center justify-center shadow-lg font-display font-black text-lg">
+            ⚡
           </div>
           <span className="font-display font-black text-xl italic tracking-tight">
             Flasho<span className="text-primary">.</span>
@@ -48,8 +49,8 @@ export default function AdminLayout() {
       `}>
         <div className="hidden md:block p-6 border-b border-gray-800">
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="bg-primary text-secondary w-8 h-8 rounded-lg flex items-center justify-center p-1 shadow-lg group-hover:scale-110 transition-transform">
-              <img src="/Flasho-Symbol.png" alt="Flasho" className="w-full h-full object-contain" />
+            <div className="bg-primary text-secondary w-8 h-8 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform font-display font-black text-lg">
+              ⚡
             </div>
             <span className="font-display font-black text-2xl italic tracking-tight">
               Flasho<span className="text-primary">.</span>
@@ -85,10 +86,16 @@ export default function AdminLayout() {
         <div className="p-4 border-t border-gray-800">
           <button 
             onClick={async () => {
-              const { signOut } = await import('firebase/auth');
-              const { auth } = await import('../../firebase');
-              await signOut(auth);
+              localStorage.removeItem('flasho_admin_logged_in');
+              try {
+                const { signOut } = await import('firebase/auth');
+                const { auth } = await import('../../firebase');
+                if (auth) await signOut(auth);
+              } catch {
+                // ignore
+              }
               closeMobileMenu();
+              window.location.href = '/admin/login';
             }}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition-all w-full"
           >

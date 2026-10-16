@@ -8,12 +8,42 @@ export default function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
+    let unsubscribe = () => {};
 
-    return () => unsubscribe();
+    // Check localStorage login session first
+    const isLocalAdmin = localStorage.getItem('flasho_admin_logged_in') === 'true';
+
+    try {
+      if (auth && typeof onAuthStateChanged === 'function') {
+        unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+          if (currentUser) {
+            setUser(currentUser);
+          } else if (isLocalAdmin) {
+            setUser({ email: 'admin@flasho.services' });
+          } else {
+            setUser(null);
+          }
+          setLoading(false);
+        }, () => {
+          if (isLocalAdmin) setUser({ email: 'admin@flasho.services' });
+          setLoading(false);
+        });
+      } else {
+        if (isLocalAdmin) setUser({ email: 'admin@flasho.services' });
+        setLoading(false);
+      }
+    } catch {
+      if (isLocalAdmin) setUser({ email: 'admin@flasho.services' });
+      setLoading(false);
+    }
+
+    return () => {
+      try {
+        unsubscribe();
+      } catch {
+        // ignore
+      }
+    };
   }, []);
 
   if (loading) {
@@ -24,7 +54,9 @@ export default function ProtectedRoute({ children }) {
     );
   }
 
-  if (!user) {
+  const isLocalAdmin = typeof window !== 'undefined' && localStorage.getItem('flasho_admin_logged_in') === 'true';
+
+  if (!user && !isLocalAdmin) {
     return <Navigate to="/admin/login" replace />;
   }
 
