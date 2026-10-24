@@ -22,20 +22,14 @@ import SocialMedia from './pages/admin/SocialMedia';
 import AdminTestimonials from './pages/admin/Testimonials';
 import AdminFAQ from './pages/admin/FAQ';
 import AdminCoverage from './pages/admin/Coverage';
-import LuckyDrawAdmin from './pages/admin/LuckyDrawAdmin';
 import AdminLogin from './pages/AdminLogin';
 import ProtectedRoute from './components/ProtectedRoute';
-import LuckyDrawRegistration from './pages/LuckyDrawRegistration';
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col bg-secondary text-white font-body overflow-x-hidden">
         <Routes>
-          {/* Standalone Lucky Draw Screen for Mobile QR Scans */}
-          <Route path="/lucky-draw" element={<LuckyDrawRegistration />} />
-          <Route path="/luckyscan" element={<LuckyDrawRegistration />} />
-
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/flasho" element={
@@ -44,7 +38,6 @@ function App() {
             </ProtectedRoute>
           }>
             <Route index element={<Dashboard />} />
-            <Route path="lucky-draw" element={<LuckyDrawAdmin />} />
             <Route path="messages" element={<Messages />} />
             <Route path="services" element={<AdminServices />} />
             <Route path="team" element={<Team />} />

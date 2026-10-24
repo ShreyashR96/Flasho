@@ -4,8 +4,6 @@ import { useLocation } from 'react-router-dom';
 import useSEO from '../hooks/useSEO';
 
 import Hero from '../components/Hero';
-import RanganoramaEvent from '../components/RanganoramaEvent';
-import LuckyDrawPopup from '../components/LuckyDrawPopup';
 import Services from '../components/Services';
 import HowItWorks from '../components/HowItWorks';
 import WhyFlasho from '../components/WhyFlasho';
@@ -49,10 +47,8 @@ export default function Home() {
   return (
     <>
       <Toaster position="top-center" />
-      <LuckyDrawPopup />
 
       <Hero />
-      <RanganoramaEvent />
       <Services />
       <HowItWorks />
       <WhyFlasho />

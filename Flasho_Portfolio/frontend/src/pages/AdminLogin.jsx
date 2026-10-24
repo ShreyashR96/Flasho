@@ -36,7 +36,7 @@ export default function AdminLogin() {
   const handleQuickDemoLogin = () => {
     localStorage.setItem('flasho_admin_logged_in', 'true');
     toast.success('Signed in as Admin');
-    navigate('/flasho/lucky-draw');
+    navigate('/flasho');
   };
 
   return (
@@ -50,7 +50,7 @@ export default function AdminLogin() {
             <ShieldCheck size={28} />
           </div>
           <h2 className="text-3xl font-bold text-white mb-2">Admin Panel</h2>
-          <p className="text-gray-400 text-sm">Sign in to manage your portfolio & lucky draw</p>
+          <p className="text-gray-400 text-sm">Sign in to manage your portfolio</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-5">
