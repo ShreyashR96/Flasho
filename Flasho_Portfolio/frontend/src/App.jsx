@@ -6,6 +6,7 @@ import ServicePage from './pages/ServicePage';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import RefundPolicy from './pages/RefundPolicy';
+import DeleteAccount from './pages/DeleteAccount';
 import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs';
 import NotFound from './pages/NotFound';
@@ -16,6 +17,7 @@ import Coverage from './pages/Coverage';
 import AdminLayout from './pages/admin/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
 import Messages from './pages/admin/Messages';
+import DeleteAccountRequests from './pages/admin/DeleteAccountRequests';
 import AdminServices from './pages/admin/Services';
 import Team from './pages/admin/Team';
 import SocialMedia from './pages/admin/SocialMedia';
@@ -39,6 +41,7 @@ function App() {
           }>
             <Route index element={<Dashboard />} />
             <Route path="messages" element={<Messages />} />
+            <Route path="delete-requests" element={<DeleteAccountRequests />} />
             <Route path="services" element={<AdminServices />} />
             <Route path="team" element={<Team />} />
             <Route path="social-media" element={<SocialMedia />} />
@@ -58,6 +61,7 @@ function App() {
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/refund" element={<RefundPolicy />} />
+                  <Route path="/delete-account" element={<DeleteAccount />} />
                   <Route path="/about" element={<AboutUs />} />
                   <Route path="/contact" element={<ContactUs />} />
                   <Route path="/coverage" element={<Coverage />} />

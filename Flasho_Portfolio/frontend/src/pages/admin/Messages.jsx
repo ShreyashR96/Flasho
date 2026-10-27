@@ -71,9 +71,10 @@ export default function Messages() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        msg.type === 'DeleteAccount' ? 'bg-red-500/20 text-red-400 font-bold border border-red-500/30' :
                         msg.type === 'Partner' ? 'bg-primary/20 text-primary' : 'bg-primary/10 text-primary'
                       }`}>
-                        {msg.type}
+                        {msg.type === 'DeleteAccount' ? 'Delete Account' : msg.type}
                       </span>
                     </td>
                     <td className="px-6 py-4 font-medium text-white">

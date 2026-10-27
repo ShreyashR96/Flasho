@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Briefcase, LogOut, Menu, X, Users, Share2, Star, HelpCircle, MapPin } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Briefcase, LogOut, Menu, X, Users, Share2, Star, HelpCircle, MapPin, UserX } from 'lucide-react';
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -9,6 +9,7 @@ export default function AdminLayout() {
   const navItems = [
     { name: 'Dashboard', path: '/flasho', icon: LayoutDashboard },
     { name: 'Messages', path: '/flasho/messages', icon: MessageSquare },
+    { name: 'Delete Requests', path: '/flasho/delete-requests', icon: UserX },
     { name: 'Services', path: '/flasho/services', icon: Briefcase },
     { name: 'Team', path: '/flasho/team', icon: Users },
     { name: 'Social Media', path: '/flasho/social-media', icon: Share2 },

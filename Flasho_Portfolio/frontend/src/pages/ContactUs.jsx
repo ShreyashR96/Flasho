@@ -10,7 +10,7 @@ export default function ContactUs() {
 
   useSEO({
     title: 'Contact Flasho — Reach Us for Home Services in Kolhapur',
-    description: 'Get in touch with Flasho for home service inquiries, partnerships, or support. Call us at +91 7098251919 or email hello@flasho.services. Available 7 AM to 10 PM every day.',
+    description: 'Get in touch with Flasho for home service inquiries, partnerships, or support. Call us at +91 9561850928 or email hello@flasho.services. Available 7 AM to 10 PM every day.',
     canonical: '/contact'
   });
 
@@ -90,9 +90,11 @@ export default function ContactUs() {
             </div>
           </motion.a>
 
-          {/* Phone Card - Highlighted */}
+          {/* Phone & WhatsApp Card - Highlighted */}
           <motion.a 
-            href="tel:+917098251919"
+            href="https://wa.me/919561850928"
+            target="_blank"
+            rel="noopener noreferrer"
             variants={itemVariants}
             className="group relative bg-gradient-to-br from-primary to-[#1e7a33] rounded-3xl p-8 hover:shadow-[0_0_40px_rgba(46,175,77,0.3)] transition-all duration-500 overflow-hidden transform hover:-translate-y-2 flex flex-col"
           >
@@ -102,10 +104,10 @@ export default function ContactUs() {
             <div className="w-14 h-14 bg-black/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-8 text-white relative z-10">
               <Phone size={24} />
             </div>
-            <h3 className="text-2xl font-bold text-white mb-2 relative z-10">Call Support</h3>
-            <p className="text-white/90 mb-12 font-medium relative z-10 flex-grow">Need immediate assistance? Speak directly to our support agents.</p>
+            <h3 className="text-2xl font-bold text-white mb-2 relative z-10">Call & WhatsApp</h3>
+            <p className="text-white/90 mb-12 font-medium relative z-10 flex-grow">Need immediate assistance? Call us directly or message our support team on WhatsApp.</p>
             <div className="flex items-center justify-between mt-auto relative z-10">
-              <span className="text-xl md:text-2xl font-bold text-white">+91 7098251919</span>
+              <span className="text-xl md:text-2xl font-bold text-white">+91 9561850928</span>
               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300 shrink-0 ml-2">
                 <ArrowRight size={18} />
               </div>

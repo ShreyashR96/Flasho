@@ -128,7 +128,7 @@ export default function Privacy() {
           <hr className="my-8 border-gray-200" />
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">16. CONTACT INFORMATION</h2>
-          <p className="mb-4">For any formal inquiries, specific data requests, or general concerns strictly relating to this Privacy Policy or your personal data, we encourage you to contact our corporate headquarters. You may reach Flasho via email at <a href="mailto:hello@flasho.services" className="text-primary hover:underline">hello@flasho.services</a> or by telephone at +91 7098251919. Our physical corporate location is registered in Kolhapur, Maharashtra, India.</p>
+          <p className="mb-4">For any formal inquiries, specific data requests, or general concerns strictly relating to this Privacy Policy or your personal data, we encourage you to contact our corporate headquarters. You may reach Flasho via email at <a href="mailto:hello@flasho.services" className="text-primary hover:underline">hello@flasho.services</a> or by telephone/WhatsApp at <a href="tel:+919561850928" className="text-primary hover:underline">+91 9561850928</a>. Our physical corporate location is registered in Kolhapur, Maharashtra, India.</p>
 
           <hr className="my-8 border-gray-200" />
 

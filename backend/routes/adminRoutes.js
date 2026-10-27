@@ -301,4 +301,14 @@ router.post('/agencies/:id/credentials', async (req, res) => {
   }
 });
 
+
+// ==========================================
+// 🟢 ACCOUNT DELETION MANAGEMENT
+// ==========================================
+const accountDeletionController = require('../controllers/accountDeletionController');
+router.get('/delete-account-requests', accountDeletionController.getAllRequests);
+router.post('/delete-account-requests/:id/approve', accountDeletionController.approveAndProcessDeletion);
+router.post('/delete-account-requests/:id/reject', accountDeletionController.rejectRequest);
+router.delete('/delete-account-requests/:id', accountDeletionController.deleteRequestRecord);
+
 module.exports = router;

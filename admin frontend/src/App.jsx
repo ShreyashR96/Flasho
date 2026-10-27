@@ -17,6 +17,7 @@ import Marketing from './pages/Marketing';
 import Settlements from './pages/Settlements';
 import Reviews from './pages/Reviews';
 import Jobs from './pages/Jobs';
+import DeleteRequests from './pages/DeleteRequests';
 
 function ProtectedRoute({ children }) {
   const [session, setSession] = useState(null);
@@ -90,6 +91,7 @@ export default function App() {
         <Route path="/users" element={<ProtectedRoute><UserList /></ProtectedRoute>} />
         <Route path="/services" element={<ProtectedRoute><Services /></ProtectedRoute>} />
         <Route path="/verification" element={<ProtectedRoute><Verification /></ProtectedRoute>} />
+        <Route path="/delete-requests" element={<ProtectedRoute><DeleteRequests /></ProtectedRoute>} />
         <Route path="/agencies" element={<ProtectedRoute><Agency /></ProtectedRoute>} />
         <Route path="/marketing" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />
         <Route path="/settlements" element={<ProtectedRoute><Settlements /></ProtectedRoute>} />

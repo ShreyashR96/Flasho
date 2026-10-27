@@ -13,7 +13,7 @@
 | **Founder & CEO** | Yashodip Devakar |
 | **Headquarters** | Kolhapur, Maharashtra, India |
 | **Email** | hello@flasho.services |
-| **Phone** | +91 7098251919 |
+| **Phone** | +91 9561850928 |
 | **Mission** | To simplify service booking by providing customers with instant access to trusted professionals while creating sustainable earning opportunities for skilled workers and service providers. |
 | **Vision** | To build India's most trusted service ecosystem that empowers skilled individuals, creates employment opportunities, and makes quality services accessible to everyone. |
 
@@ -224,7 +224,7 @@ Three cards side by side:
 Two-column layout:
 - **Left:** Contact details
   - 📧 hello@flasho.services
-  - 📞 +91 7098251919
+  - 📞 +91 9561850928
   - 📍 Kolhapur, Maharashtra, India
   - We welcome: Service Agencies · Skilled Workers · Business Partners · Investors · Community Organizations
 

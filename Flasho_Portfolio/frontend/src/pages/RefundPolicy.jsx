@@ -267,7 +267,7 @@ export default function RefundPolicy() {
             <h3 className="font-bold text-gray-900 mb-2">Flasho</h3>
             <ul className="space-y-2">
               <li><strong>Email:</strong> <a href="mailto:hello@flasho.services" className="text-primary hover:underline">hello@flasho.services</a></li>
-              <li><strong>Phone:</strong> +91 7098251919</li>
+              <li><strong>Phone / WhatsApp:</strong> <a href="tel:+919561850928" className="text-primary hover:underline">+91 9561850928</a> (<a href="https://wa.me/919561850928" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">WhatsApp</a>)</li>
               <li><strong>Location:</strong> Kolhapur, Maharashtra, India</li>
             </ul>
           </div>

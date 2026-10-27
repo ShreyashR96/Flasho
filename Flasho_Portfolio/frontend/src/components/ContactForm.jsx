@@ -77,8 +77,10 @@ export default function ContactForm() {
                       <Phone className="text-primary" size={24} />
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-1">Call Us</h4>
-                      <p className="text-gray-400">+91 7098251919</p>
+                      <h4 className="font-semibold mb-1">Call / WhatsApp</h4>
+                      <p className="text-gray-400">
+                        <a href="tel:+919561850928" className="hover:text-primary transition-colors">+91 9561850928</a>
+                      </p>
                     </div>
                   </div>
                   

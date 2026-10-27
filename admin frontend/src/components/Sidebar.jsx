@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, HardHat, Briefcase, Building2, LogOut, Star, UserCheck, Megaphone, Wallet } from 'lucide-react';
+import { LayoutDashboard, Users, HardHat, Briefcase, Building2, LogOut, Star, UserCheck, Megaphone, Wallet, UserX } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export default function Sidebar() {
@@ -34,6 +34,7 @@ export default function Sidebar() {
           <NavItem to="/users" icon={<Users size={20}/>} label="Customers" active={isActive('/users')} />
           <NavItem to="/workers" icon={<HardHat size={20}/>} label="Partners" active={isActive('/workers')} />
           <NavItem to="/verification" icon={<UserCheck size={20}/>} label="Verification" active={isActive('/verification')} />
+          <NavItem to="/delete-requests" icon={<UserX size={20}/>} label="Delete Requests" active={isActive('/delete-requests')} />
           <NavItem to="/agencies" icon={<Building2 size={20}/>} label="Agencies" active={isActive('/agencies')} />
           <NavItem to="/settlements" icon={<Wallet size={20}/>} label="Payouts" active={isActive('/settlements')} />
           <NavItem to="/reviews" icon={<Star size={20}/>} label="Reviews" active={isActive('/reviews')} />

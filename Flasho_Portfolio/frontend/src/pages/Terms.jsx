@@ -197,7 +197,7 @@ export default function Terms() {
           <hr className="my-8 border-gray-200" />
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">24. CORPORATE CONTACT INFORMATION</h2>
-          <p className="mb-4">If you require clarification regarding these Terms, wish to report a violation, or need to serve legal notices, please contact our designated grievance and support cell. You may reach us via email at <a href="mailto:hello@flasho.services" className="text-primary hover:underline">hello@flasho.services</a> or by telephone at +91 7098251919. Our registered office jurisdiction is located in Kolhapur, Maharashtra, India.</p>
+          <p className="mb-4">If you require clarification regarding these Terms, wish to report a violation, or need to serve legal notices, please contact our designated grievance and support cell. You may reach us via email at <a href="mailto:hello@flasho.services" className="text-primary hover:underline">hello@flasho.services</a> or by telephone/WhatsApp at <a href="tel:+919561850928" className="text-primary hover:underline">+91 9561850928</a>. Our registered office jurisdiction is located in Kolhapur, Maharashtra, India.</p>
 
           <hr className="my-8 border-gray-200" />
 
